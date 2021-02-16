@@ -78,7 +78,7 @@ def get_heights(url: str) -> list[float]:
 
 # parse 0'0"
 def parse_height(string: str) -> float:
-    return int(string[0:string.index('\'')]) + (float(string[string.index('\'')+1:-1]) / 12)
+    return int(string[0:string.index('\'')]) + (float(string[string.index('\'') + 1:-1]) / 12)
 
 
 def average(array: list[float] or list[list[float]]) -> float:
@@ -139,12 +139,4 @@ def q7() -> None:
 if __name__ == '__main__':
     for func in [q1, q2, q3, q4, q5, q6, q7]:
         func()
-    # debug()
 
-
-# ignore this, this was used to generate charts for reports
-def debug():
-    print(m_sw_ht)
-    print(m_vb_ht)
-    print(f_sw_ht)
-    print(f_vb_ht)
