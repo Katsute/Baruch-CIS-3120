@@ -100,7 +100,7 @@ def q5() -> None:
         print("NullPointerException: Men's averages not found, please run q1() and q2() first.")
         return
 
-    diff: float = average(m_sw_ht) - average(m_vb_ht)
+    diff: float = abs(average(m_sw_ht) - average(m_vb_ht))
     print(f"Diff: {diff:.2f} ft.")
 
     return
@@ -114,7 +114,7 @@ def q6() -> None:
         print("NullPointerException: Women's averages not found, please run q3() and q4() first.")
         return
 
-    diff: float = average(f_sw_ht) - average(f_vb_ht)
+    diff: float = abs(average(f_sw_ht) - average(f_vb_ht))
     print(f"Diff: {diff:.2f} ft.")
 
     return
@@ -129,7 +129,13 @@ def q7() -> None:
         print("NullPointerException: Averages not found, please run q1(), q2(), q3(), and q4() first.")
         return
 
-    diff: float = average([m_sw_ht, f_sw_ht]) - average([m_vb_ht, f_vb_ht])
+    avg_sw: float = average([m_sw_ht, f_sw_ht])
+    avg_vb: float = average([m_vb_ht, f_vb_ht])
+
+    print(f"Average (SW): {avg_sw:.2f} ft.")
+    print(f"Average (VB): {avg_vb:.2f} ft.")
+
+    diff: float = abs(avg_sw - avg_vb)
     print(f"Diff: {diff:.2f} ft.")
 
     return
