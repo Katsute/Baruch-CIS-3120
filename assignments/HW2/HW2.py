@@ -35,7 +35,7 @@ def main() -> None:
     df.to_csv("us_pop.csv")
 
     # describe
-    print(df[["2020 Pop.", "2020 % US Pop."]].describe())
+    print(df[["2020 Pop.", "Net Change"]].describe().apply(lambda s: s.apply('{0:,.0f}'.format)))
 
     return
 
