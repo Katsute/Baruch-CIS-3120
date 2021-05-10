@@ -25,6 +25,7 @@ def main() -> None:
         row: Tag
         cols: List[str or float] = [
             (row.find("p", {"class": "coin-item-symbol"}) or row.find("span", {"class": "crypto-symbol"})).text.strip()
+            # symbol as first col
         ]
         for col in row.find_all("td"):  # for each col
             raw: str = col.text.strip()
@@ -35,29 +36,31 @@ def main() -> None:
 
         tableset.append(cols)
 
-    tbl_df: pd.DataFrame = pd.DataFrame(tableset, columns=["symbol", "?", "#", "Name", "Price", "24Hr%", "7d%", "Market Cap", "Volume", "Supply", "7d", "??"])
+    tbl_df: pd.DataFrame = pd.DataFrame(tableset,
+                                        columns=["symbol", "?", "#", "Name", "Price", "24Hr%", "7d%", "Market Cap",
+                                                 "Volume", "Supply", "7d", "??"])
 
     # API
     base_url: str = "https://api.coincap.io/v2"
     dataset: Dict[str, Dict[str, float or str]] = {}
 
     i: int = 0
-    delay: int = 5
+    delay: int = 3
     size: int = len(tbl_df["symbol"])
     print("API requests will be delayed to prevent rate limit")
     for c in tbl_df["symbol"]:
         i += 1
-        print(f"Processing {i}/{size} :: {base_url}/assets?search={c} :: {(size-i)*delay}s remaining")
+        print(f"Processing {i}/{size} :: {base_url}/assets?search={c} :: {(size - i) * delay}s remaining")
         data: List[any] = request(base_url, "assets/", search=c)["data"]
         first: Dict[str, str] = data[0] if len(data) > 0 else {}
 
         dataset[c] = {
-            "symbol"        : first.get("symbol", c),
-            "supply"        : float(first.get("supply", '0')),
-            "maxSupply"     : float(first.get("maxSupply", '0')),
-            "marketCapUsd"  : float(first.get("marketCapUsd", '0')),
-            "volumeUsd24Hr" : float(first.get("volumeUsd24Hr", '0')),
-            "priceUsd"      : float(first.get("priceUsd", '0'))
+            "symbol"        : first.get("symbol") or c,
+            "supply"        : float(first.get("supply") or '0'),
+            "maxSupply"     : float(first.get("maxSupply") or '0'),
+            "marketCapUsd"  : float(first.get("marketCapUsd") or '0'),
+            "volumeUsd24Hr" : float(first.get("volumeUsd24Hr") or '0'),
+            "priceUsd"      : float(first.get("priceUsd") or '0')
         }
         time.sleep(delay)  # prevent rate limit
 
@@ -68,6 +71,8 @@ def main() -> None:
     print(df)
 
     df.to_csv("crypto.csv")
+
+    print(df.describe())
 
     return
 
