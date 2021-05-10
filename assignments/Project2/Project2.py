@@ -23,10 +23,8 @@ def main() -> None:
         if i > limit: break
 
         row: Tag
-        cols: List[str or float] = [
-            (row.find("p", {"class": "coin-item-symbol"}) or row.find("span", {"class": "crypto-symbol"})).text.strip()
-            # symbol as first col
-        ]
+        # init col with symbol as first
+        cols: List[str or float] = [(row.find("p", {"class": "coin-item-symbol"}) or row.find("span", {"class": "crypto-symbol"})).text.strip()]
         for col in row.find_all("td"):  # for each col
             raw: str = col.text.strip()
             try:  # if string can be expressed as float then cast, otherwise save raw string
@@ -45,10 +43,11 @@ def main() -> None:
     dataset: Dict[str, Dict[str, float or str]] = {}
 
     i: int = 0
-    delay: int = 3
+    delay: int = 2
     size: int = len(tbl_df["symbol"])
     print("API requests will be delayed to prevent rate limit")
     for c in tbl_df["symbol"]:
+        time.sleep(delay)  # prevent rate limit
         i += 1
         print(f"Processing {i}/{size} :: {base_url}/assets?search={c} :: {(size - i) * delay}s remaining")
         data: List[any] = request(base_url, "assets/", search=c)["data"]
@@ -62,16 +61,18 @@ def main() -> None:
             "volumeUsd24Hr" : float(first.get("volumeUsd24Hr") or '0'),
             "priceUsd"      : float(first.get("priceUsd") or '0')
         }
-        time.sleep(delay)  # prevent rate limit
 
     api_df: pd.DataFrame = pd.DataFrame(dataset)
 
     # merge df
-    df: pd.DataFrame = pd.merge(tbl_df, api_df.transpose(), on="symbol")
+    df: pd.DataFrame = pd.merge(tbl_df, api_df.transpose(), on="symbol").fillna(0)
+
     print(df)
 
+    # csv
     df.to_csv("crypto.csv")
 
+    # describe
     print(df.describe(include="all"))
 
     return
