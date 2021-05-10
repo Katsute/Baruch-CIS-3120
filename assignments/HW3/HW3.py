@@ -31,6 +31,8 @@ def main() -> None:
 
     df.to_csv("crypto.csv")
 
+    print(df.transpose().describe())
+
     return
 
 

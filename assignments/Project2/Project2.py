@@ -72,7 +72,7 @@ def main() -> None:
 
     df.to_csv("crypto.csv")
 
-    print(df.describe())
+    print(df.describe(include="all"))
 
     return
 
